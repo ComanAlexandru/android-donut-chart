@@ -30,9 +30,29 @@ class PlaygroundActivity : AppCompatActivity() {
     private val orangeSectionText by lazy { findViewById<TextView>(R.id.orange_section_text) }
     private val interpolatorRadioGroup by lazy { findViewById<RadioGroup>(R.id.interpolator_radio_group) }
 
+    private var sections: List<DonutSection> = listOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playground)
+
+        sections = listOf(
+            DonutSection(
+                BlackCategory.name,
+                getColorCompat(BlackCategory.colorRes),
+                5f
+            ),
+            DonutSection(
+                GreenCategory.name,
+                getColorCompat(GreenCategory.colorRes),
+                5f
+            ),
+            DonutSection(
+                OrangeCategory.name,
+                getColorCompat(OrangeCategory.colorRes),
+                5f
+            )
+        )
 
         updateIndicators()
         initControls()
@@ -55,26 +75,7 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private fun fillData() {
-        val sections = listOf(
-            DonutSection(
-                BlackCategory.name,
-                getColorCompat(BlackCategory.colorRes),
-                5f
-            ),
-            DonutSection(
-                GreenCategory.name,
-                getColorCompat(GreenCategory.colorRes),
-                5f
-            ),
-            DonutSection(
-                OrangeCategory.name,
-                getColorCompat(OrangeCategory.colorRes),
-                5f
-            )
-        )
-
         donutProgressView.submitData(sections)
-
         updateIndicators()
     }
 
@@ -82,7 +83,7 @@ class PlaygroundActivity : AppCompatActivity() {
         amountCapText.text = getString(R.string.amount_cap, donutProgressView.totalWeight)
         amountTotalText.text = getString(
             R.string.amount_total,
-            donutProgressView.getData().sumByFloat { it.weight }
+            sections.sumByFloat { it.weight }
         )
 
         updateIndicatorAmount(BlackCategory, blackSectionText)
@@ -91,7 +92,7 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private fun updateIndicatorAmount(category: DataCategory, textView: TextView) {
-        donutProgressView.getData()
+        sections
             .filter { it.label == category.name }
             .sumByFloat { it.weight }
             .also {

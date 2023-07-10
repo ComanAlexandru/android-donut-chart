@@ -2,7 +2,6 @@ package app.futured.donut
 
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
@@ -13,13 +12,12 @@ import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import androidx.core.animation.doOnEnd
-import androidx.core.content.res.use
 import app.futured.donut.extensions.sumByFloat
 
 class DonutProgressView @JvmOverloads constructor(
     context: Context,
-    private val attrs: AttributeSet? = null,
-    private val defStyleAttr: Int = 0
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
     companion object {
@@ -57,40 +55,51 @@ class DonutProgressView @JvmOverloads constructor(
     private var animatorSet: AnimatorSet? = null
 
     init {
-        obtainAttributes()
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.DonutProgressView, defStyleAttr, 0)
+
+        strokeWidthPx = typedArray.getDimensionPixelSize(
+            R.styleable.DonutProgressView_donut_strokeWidth,
+            dpToPx(DEFAULT_STROKE_WIDTH_DP).toInt()
+        ).toFloat()
+
+        animationDurationMs = typedArray.getInt(
+            R.styleable.DonutProgressView_donut_animationDuration,
+            DEFAULT_ANIM_DURATION_MS
+        ).toLong()
+
+        animationInterpolator = typedArray.getResourceId(R.styleable.DonutProgressView_donut_animationInterpolator, 0)
+            .let { id ->
+                if (id != 0) {
+                    AnimationUtils.loadInterpolator(context, id)
+                } else {
+                    DEFAULT_INTERPOLATOR
+                }
+            }
+
+        typedArray.recycle()
     }
 
-    @SuppressLint("Recycle")
-    private fun obtainAttributes() {
-        context.obtainStyledAttributes(
-            attrs,
-            R.styleable.DonutProgressView,
-            defStyleAttr,
-            0
-        ).use {
-            strokeWidthPx = it.getDimensionPixelSize(
-                R.styleable.DonutProgressView_donut_strokeWidth,
-                dpToPx(DEFAULT_STROKE_WIDTH_DP).toInt()
-            ).toFloat()
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        this.width = w
+        this.height = h
 
-            animationDurationMs = it.getInt(
-                R.styleable.DonutProgressView_donut_animationDuration,
-                DEFAULT_ANIM_DURATION_MS
-            ).toLong()
+        this.paddingHorizontal = (paddingLeft + paddingRight).toFloat()
+        this.paddingVertical = (paddingTop + paddingBottom).toFloat()
 
-            animationInterpolator =
-                it.getResourceId(R.styleable.DonutProgressView_donut_animationInterpolator, 0)
-                    .let { id ->
-                        if (id != 0) {
-                            AnimationUtils.loadInterpolator(context, id)
-                        } else {
-                            DEFAULT_INTERPOLATOR
-                        }
-                    }
-        }
+        this.centerX = w / 2f
+        this.centerY = h / 2f
+
+        updateLinesRadius()
     }
 
-    fun getData() = donutSections.toList()
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val originalWidth = MeasureSpec.getSize(widthMeasureSpec)
+
+        super.onMeasure(
+            widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY)
+        )
+    }
 
     fun submitData(sections: List<DonutSection>) {
         donutSectionLines.clear()
@@ -126,39 +135,6 @@ class DonutProgressView @JvmOverloads constructor(
     private fun calculateStartingAngle(weight: Float, totalWeight: Float): Float {
         return 270f
     }
-
-    /**
-     * Adds [amount] to existing section specified by [sectionName]. If section does not exist and [color] is specified,
-     * creates new section internally.
-     */
-    fun addAmount(sectionName: String, amount: Float, color: Int? = null) {
-        for (i in 0 until donutSections.size) {
-            if (donutSections[i].label == sectionName) {
-                donutSections[i] = donutSections[i].copy(weight = donutSections[i].weight + amount)
-                submitData(donutSections)
-                return
-            }
-        }
-
-        color?.let {
-            submitData(
-                donutSections + DonutSection(
-                    label = sectionName,
-                    color = it,
-                    weight = amount
-                )
-            )
-        }
-            ?: warn {
-                "Adding amount to non-existent section: $sectionName. " +
-                        "Please specify color, if you want to have section created automatically."
-            }
-    }
-
-    /**
-     * Clear data, removing all lines.
-     */
-    fun clear() = submitData(listOf())
 
     private fun resolveState() {
         animatorSet?.cancel()
@@ -204,11 +180,7 @@ class DonutProgressView @JvmOverloads constructor(
         return thisLine + previousLine
     }
 
-    private fun animateLine(
-        line: DonutSectionLine,
-        to: Float,
-        animationEnded: (() -> Unit)? = null
-    ): ValueAnimator {
+    private fun animateLine(line: DonutSectionLine, to: Float, animationEnded: (() -> Unit)? = null): ValueAnimator {
         return ValueAnimator.ofFloat(line.mLength, to).apply {
             duration = animationDurationMs
             interpolator = animationInterpolator
@@ -223,28 +195,6 @@ class DonutProgressView @JvmOverloads constructor(
                 animationEnded?.invoke()
             }
         }
-    }
-
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        this.width = w
-        this.height = h
-
-        this.paddingHorizontal = (paddingLeft + paddingRight).toFloat()
-        this.paddingVertical = (paddingTop + paddingBottom).toFloat()
-
-        this.centerX = w / 2f
-        this.centerY = h / 2f
-
-        updateLinesRadius()
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val originalWidth = MeasureSpec.getSize(widthMeasureSpec)
-
-        super.onMeasure(
-            widthMeasureSpec,
-            MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY)
-        )
     }
 
     private fun updateLinesRadius() {
