@@ -29,7 +29,6 @@ class DonutProgressView @JvmOverloads constructor(
     companion object {
         private const val TAG = "DonutProgressView"
 
-        private const val DEFAULT_MASTER_PROGRESS = 1f
         private const val DEFAULT_STROKE_WIDTH_DP = 12f
         private val DEFAULT_BG_COLOR_RES = R.color.grey
 
@@ -45,14 +44,6 @@ class DonutProgressView @JvmOverloads constructor(
     private var radius = 0f
     private var centerX = 0f
     private var centerY = 0f
-
-    /**
-     * Percentage of progress shown for all lines.
-     *
-     * Eg. when one line has 50% of total graph length,
-     * setting this to 0.5f will result in that line being animated to 25% of total graph length.
-     */
-    private var masterProgress: Float = DEFAULT_MASTER_PROGRESS
 
     /**
      * Stroke width of all lines in pixels.
@@ -184,7 +175,6 @@ class DonutProgressView @JvmOverloads constructor(
                             radius = radius,
                             lineColor = newLineColor,
                             lineStrokeWidth = strokeWidth,
-                            masterProgress = masterProgress,
                             length = 0f,
                             gapWidthDegrees = gapWidthDegrees,
                             gapAngleDegrees = gapAngleDegrees

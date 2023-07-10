@@ -14,7 +14,6 @@ internal class DonutProgressLine(
     radius: Float,
     lineColor: Int,
     lineStrokeWidth: Float,
-    masterProgress: Float,
     length: Float,
     gapWidthDegrees: Float,
     gapAngleDegrees: Float,
@@ -50,12 +49,6 @@ internal class DonutProgressLine(
             paint.strokeWidth = value
         }
 
-    var mMasterProgress: Float = 0.0f
-        set(value) {
-            field = value
-            updatePathEffect()
-        }
-
     var mLength: Float = 0.0f
         set(value) {
             field = value
@@ -82,7 +75,6 @@ internal class DonutProgressLine(
         this.mRadius = radius
         this.mLineColor = lineColor
         this.mLineStrokeWidth = lineStrokeWidth
-        this.mMasterProgress = masterProgress
         this.mLength = length
         this.mGapWidthDegrees = gapWidthDegrees
         this.mGapAngleDegrees = gapAngleDegrees
@@ -118,7 +110,7 @@ internal class DonutProgressLine(
 
     private fun updatePathEffect() {
         val pathLen = PathMeasure(path, false).length
-        val drawnLength = ceil(pathLen.toDouble() * mLength * mMasterProgress).toFloat()
+        val drawnLength = ceil(pathLen.toDouble() * mLength).toFloat()
 
         paint.pathEffect = ComposePathEffect(
             CornerPathEffect(pathLen / SIDES),
