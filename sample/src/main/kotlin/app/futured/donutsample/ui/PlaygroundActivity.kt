@@ -36,15 +36,12 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private val donutProgressView by lazy { findViewById<DonutProgressView>(R.id.donut_view) }
-    private val gapAngleSeekbar by lazy { findViewById<SeekBar>(R.id.gap_angle_seekbar) }
-    private val gapAngleText by lazy { findViewById<TextView>(R.id.gap_angle_text) }
     private val strokeWidthSeekbar by lazy { findViewById<SeekBar>(R.id.stroke_width_seekbar) }
     private val strokeWidthText by lazy { findViewById<TextView>(R.id.stroke_width_text) }
     private val animationDurationSeekbar by lazy { findViewById<SeekBar>(R.id.anim_duration_seekbar) }
     private val animationDurationText by lazy { findViewById<TextView>(R.id.anim_duration_text) }
     private val addButton by lazy { findViewById<TextView>(R.id.button_add) }
     private val removeButton by lazy { findViewById<TextView>(R.id.button_remove) }
-    private val randomColorsButton by lazy { findViewById<TextView>(R.id.button_random_colors) }
     private val clearButton by lazy { findViewById<TextView>(R.id.button_clear) }
     private val amountCapText by lazy { findViewById<TextView>(R.id.amount_cap_text) }
     private val amountTotalText by lazy { findViewById<TextView>(R.id.amount_total_text) }
@@ -59,16 +56,11 @@ class PlaygroundActivity : AppCompatActivity() {
         setContentView(R.layout.activity_playground)
 
         updateIndicators()
-        setupDonut()
         initControls()
         Handler().postDelayed({
             fillInitialData()
             runInitialAnimation()
         }, 800)
-    }
-
-    private fun setupDonut() {
-        donutProgressView.gapAngleDegrees = 0f
     }
 
     private fun runInitialAnimation() {
@@ -135,16 +127,6 @@ class PlaygroundActivity : AppCompatActivity() {
 
     private fun initControls() {
 
-        // region Styles
-
-        setupSeekbar(
-            seekBar = gapAngleSeekbar,
-            titleTextView = gapAngleText,
-            initProgress = donutProgressView.gapAngleDegrees.toInt(),
-            getTitleText = { getString(R.string.gap_angle, it) },
-            onProgressChanged = { donutProgressView.gapAngleDegrees = it.toFloat() }
-        )
-
         setupSeekbar(
             seekBar = strokeWidthSeekbar,
             titleTextView = strokeWidthText,
@@ -164,10 +146,6 @@ class PlaygroundActivity : AppCompatActivity() {
             updateDirectionSwitchText()
         }
         updateDirectionSwitchText()
-
-        // endregion
-
-        // region Data
 
         // Add random amount to random section
         addButton.setOnClickListener {
@@ -190,23 +168,11 @@ class PlaygroundActivity : AppCompatActivity() {
             }
         }
 
-        // Randomize data set colors
-        randomColorsButton.setOnClickListener {
-            val sections = donutProgressView.getData().toMutableList()
-            for (i in 0 until sections.size) {
-                sections[i] = sections[i].copy(color = Random.nextInt())
-            }
-
-            donutProgressView.submitData(sections)
-        }
-
         // Clear graph
         clearButton.setOnClickListener {
             donutProgressView.clear()
             updateIndicators()
         }
-
-        // endregion
 
         // region Animations
 

@@ -15,7 +15,6 @@
         app:donut_animationInterpolator="@android:interpolator/decelerate_quint"
         app:donut_bgLineColor="@color/cloud"
         app:donut_direction="anticlockwise"
-        app:donut_gapAngle="270"
         app:donut_strokeWidth="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -111,21 +110,6 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/gap_angle_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/gap_angle"/>
-
-            <SeekBar
-                android:id="@+id/gap_angle_seekbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="360"
-                android:padding="8dp"
-                tools:progress="270"/>
-
-            <TextView
                 android:id="@+id/stroke_width_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -177,13 +161,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/button_remove"/>
-
-                    <Button
-                        android:id="@+id/button_random_colors"
-                        style="?attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/button_random_colors"/>
 
                     <Button
                         android:id="@+id/button_clear"

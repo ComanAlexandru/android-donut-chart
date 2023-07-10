@@ -32,7 +32,6 @@ class DonutProgressView @JvmOverloads constructor(
 
         private const val DEFAULT_MASTER_PROGRESS = 1f
         private const val DEFAULT_STROKE_WIDTH_DP = 12f
-        private const val DEFAULT_GAP_ANGLE = 90f
         private val DEFAULT_DIRECTION = DonutDirection.CLOCKWISE
         private val DEFAULT_BG_COLOR_RES = R.color.grey
 
@@ -96,11 +95,13 @@ class DonutProgressView @JvmOverloads constructor(
     /**
      * Angle in degrees, at which the gap will be displayed.
      */
-    var gapAngleDegrees: Float = DEFAULT_GAP_ANGLE
+    //TODO: gapAngleDegrees should disappear, instead a function should calculate gap angle for each section (gap angle is where the section starts in radians)
+    private var gapAngleDegrees: Float = 270f
         set(value) {
             field = value
 
             bgLine.mGapAngleDegrees = value
+            //TODO: mGapAngleDegrees should be calculated individually for each section to precede the anterior one
             donutSectionLines.forEach { it.mGapAngleDegrees = value }
             invalidate()
         }
@@ -168,9 +169,6 @@ class DonutProgressView @JvmOverloads constructor(
                         DEFAULT_BG_COLOR_RES
                     )
                 )
-
-            gapAngleDegrees =
-                it.getFloat(R.styleable.DonutProgressView_donut_gapAngle, DEFAULT_GAP_ANGLE)
 
             direction = DonutDirection.values()[it.getInt(R.styleable.DonutProgressView_donut_direction, 0)]
 
