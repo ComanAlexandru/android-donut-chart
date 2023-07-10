@@ -18,6 +18,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, PlaygroundActivity::class.java))
         }
 
+        //Test
+
         findViewById<View>(R.id.compose_sample_button).setOnClickListener {
             startActivity(Intent(this, PlaygroundComposeActivity::class.java))
         }
