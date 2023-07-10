@@ -9,13 +9,13 @@ import android.graphics.Path
 import android.graphics.PathMeasure
 import kotlin.math.ceil
 
-internal class DonutProgressLine(
-    val name: String,
+internal class DonutSectionLine(
+    val label: String,
     radius: Float,
     lineColor: Int,
     lineStrokeWidth: Float,
     length: Float,
-    gapAngleDegrees: Float,
+    startAngleDegrees: Float,
 ) {
 
     companion object {
@@ -25,24 +25,24 @@ internal class DonutProgressLine(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
-        strokeWidth = mLineStrokeWidth
-        color = mLineColor
+        strokeWidth = this@DonutSectionLine.lineWidth
+        color = this@DonutSectionLine.lineColor
     }
 
-    var mRadius: Float = 0.0f
+    var radius: Float = 0.0f
         set(value) {
             field = value
             updatePath()
             updatePathEffect()
         }
 
-    var mLineColor: Int = 0
+    var lineColor: Int = 0
         set(value) {
             field = value
             paint.color = value
         }
 
-    var mLineStrokeWidth: Float = 0.0f
+    var lineWidth: Float = 0.0f
         set(value) {
             field = value
             paint.strokeWidth = value
@@ -54,7 +54,7 @@ internal class DonutProgressLine(
             updatePathEffect()
         }
 
-    var mGapAngleDegrees = 270f
+    var angleStartDegrees = 270f
         set(value) {
             field = value
             updatePath()
@@ -64,31 +64,30 @@ internal class DonutProgressLine(
     private var path: Path = createPath()
 
     init {
-        this.mRadius = radius
-        this.mLineColor = lineColor
-        this.mLineStrokeWidth = lineStrokeWidth
+        this.radius = radius
+        this.lineColor = lineColor
+        this.lineWidth = lineStrokeWidth
         this.mLength = length
-        this.mGapAngleDegrees = gapAngleDegrees
+        this.angleStartDegrees = startAngleDegrees
     }
 
     private fun createPath(): Path {
         val path = Path()
 
-        val offset = mGapAngleDegrees.toRadians()
+        val startAngleRadians = angleStartDegrees.toRadians()
 
-        val startAngle = 0.0
         val endAngle = Math.PI * 2.0
-        val angleStep = (endAngle - startAngle) / SIDES
+        val angleStep = endAngle / SIDES
 
         path.moveTo(
-            mRadius * Math.cos(startAngle + offset).toFloat(),
-            mRadius * Math.sin(startAngle + offset).toFloat()
+            radius * Math.cos(startAngleRadians).toFloat(),
+            radius * Math.sin(startAngleRadians).toFloat()
         )
 
         for (i in 1 until SIDES + 1) {
             path.lineTo(
-                mRadius * Math.cos(i * angleStep + offset + startAngle).toFloat(),
-                mRadius * Math.sin(i * angleStep + offset + startAngle).toFloat()
+                radius * Math.cos(i * angleStep + startAngleRadians).toFloat(),
+                radius * Math.sin(i * angleStep + startAngleRadians).toFloat()
             )
         }
 

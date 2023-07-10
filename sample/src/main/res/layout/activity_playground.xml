@@ -13,7 +13,6 @@
         android:layout_margin="64dp"
         app:donut_animationDuration="1000"
         app:donut_animationInterpolator="@android:interpolator/decelerate_quint"
-        app:donut_bgLineColor="@color/cloud"
         app:donut_strokeWidth="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,88 +103,10 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/graph_style"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/stroke_width_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/stroke_width"/>
-
-            <SeekBar
-                android:id="@+id/stroke_width_seekbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="100"
-                android:padding="8dp"
-                tools:progress="40"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/graph_data"
+                android:text="@string/animation_interpolators"
                 android:textSize="18sp"
                 android:textStyle="bold"/>
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/button_add"
-                        style="?attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/button_add"/>
-
-                    <Button
-                        android:id="@+id/button_remove"
-                        style="?attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/button_remove"/>
-
-                    <Button
-                        android:id="@+id/button_clear"
-                        style="?attr/buttonBarButtonStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/button_clear"/>
-                </LinearLayout>
-
-            </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/anim_duration_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/animation_duration"/>
-
-            <SeekBar
-                android:id="@+id/anim_duration_seekbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="3000"
-                android:padding="8dp"
-                android:progressTint="@color/process_black"
-                android:thumbTint="@color/process_black"
-                tools:progress="5"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/animation_interpolators"/>
 
             <HorizontalScrollView
                 android:layout_width="match_parent"

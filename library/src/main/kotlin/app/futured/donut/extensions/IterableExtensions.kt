@@ -10,15 +10,3 @@ internal inline fun <T> Iterable<T>.sumByFloat(selector: (T) -> Float): Float {
     }
     return sum
 }
-
-internal inline fun <T, R> Iterable<T>.hasDuplicatesBy(selector: (T) -> R): Boolean {
-    val registry = mutableListOf<R>()
-    forEach {
-        val sel = selector(it)
-        if (registry.contains(sel)) {
-            return true
-        }
-        registry.add(sel)
-    }
-    return false
-}
