@@ -61,7 +61,6 @@ class DonutProgressView @JvmOverloads constructor(
         set(value) {
             field = value
 
-            bgLine.mLineStrokeWidth = value
             donutSectionLines.forEach { it.mLineStrokeWidth = value }
             updateLinesRadius()
             invalidate()
@@ -81,7 +80,6 @@ class DonutProgressView @JvmOverloads constructor(
     var bgLineColor: Int = ContextCompat.getColor(context, DEFAULT_BG_COLOR_RES)
         set(value) {
             field = value
-            bgLine.mLineColor = value
             invalidate()
         }
 
@@ -98,7 +96,6 @@ class DonutProgressView @JvmOverloads constructor(
         set(value) {
             field = value
 
-            bgLine.mGapAngleDegrees = value
             //TODO: mGapAngleDegrees should be calculated individually for each section to precede the anterior one
             donutSectionLines.forEach { it.mGapAngleDegrees = value }
             invalidate()
@@ -117,17 +114,6 @@ class DonutProgressView @JvmOverloads constructor(
     private val donutSections = mutableListOf<DonutSection>()
     private val donutSectionLines = mutableListOf<DonutProgressLine>()
     private var animatorSet: AnimatorSet? = null
-
-    private val bgLine = DonutProgressLine(
-        name = "_bg",
-        radius = radius,
-        lineColor = bgLineColor,
-        lineStrokeWidth = strokeWidth,
-        masterProgress = masterProgress,
-        length = 1f,
-        gapWidthDegrees = gapWidthDegrees,
-        gapAngleDegrees = gapAngleDegrees
-    )
 
     init {
         obtainAttributes()
@@ -405,7 +391,6 @@ class DonutProgressView @JvmOverloads constructor(
         val hh = h.toFloat() - yPadd
         this.radius = Math.min(ww, hh) / 2f - strokeWidth / 2f
 
-        bgLine.mRadius = radius
         donutSectionLines.forEach { it.mRadius = radius }
     }
 
@@ -413,7 +398,6 @@ class DonutProgressView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvas.translate(centerX, centerY)
 
-        bgLine.draw(canvas)
         donutSectionLines.forEach { it.draw(canvas) }
     }
 
