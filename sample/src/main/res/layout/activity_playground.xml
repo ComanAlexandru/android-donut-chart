@@ -115,23 +115,6 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/master_progress_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/master_progress"/>
-
-            <SeekBar
-                android:id="@+id/master_progress_seekbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="100"
-                android:padding="8dp"
-                android:progressTint="@color/process_black"
-                android:thumbTint="@color/process_black"
-                tools:progress="60"/>
-
-            <TextView
                 android:id="@+id/gap_width_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

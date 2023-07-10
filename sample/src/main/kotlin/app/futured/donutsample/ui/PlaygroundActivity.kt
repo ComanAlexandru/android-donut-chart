@@ -37,8 +37,6 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private val donutProgressView by lazy { findViewById<DonutProgressView>(R.id.donut_view) }
-    private val masterProgressSeekbar by lazy { findViewById<SeekBar>(R.id.master_progress_seekbar) }
-    private val masterProgressText by lazy { findViewById<TextView>(R.id.master_progress_text) }
     private val gapWidthSeekbar by lazy { findViewById<SeekBar>(R.id.gap_width_seekbar) }
     private val gapWidthText by lazy { findViewById<TextView>(R.id.gap_width_text) }
     private val gapAngleSeekbar by lazy { findViewById<SeekBar>(R.id.gap_angle_seekbar) }
@@ -78,7 +76,6 @@ class PlaygroundActivity : AppCompatActivity() {
 
     private fun setupDonut() {
         donutProgressView.cap = 5f
-        donutProgressView.masterProgress = 0f
         donutProgressView.gapAngleDegrees = 0f
     }
 
@@ -87,10 +84,7 @@ class PlaygroundActivity : AppCompatActivity() {
             duration = 1000
             interpolator = FastOutSlowInInterpolator()
             addUpdateListener {
-                donutProgressView.masterProgress = it.animatedValue as Float
                 donutProgressView.alpha = it.animatedValue as Float
-
-                masterProgressSeekbar.progress = (donutProgressView.masterProgress * 100).toInt()
             }
 
             start()
@@ -150,14 +144,6 @@ class PlaygroundActivity : AppCompatActivity() {
     private fun initControls() {
 
         // region Styles
-
-        setupSeekbar(
-            seekBar = masterProgressSeekbar,
-            titleTextView = masterProgressText,
-            initProgress = (donutProgressView.masterProgress * 100).toInt(),
-            getTitleText = { getString(R.string.master_progress, it) },
-            onProgressChanged = { donutProgressView.masterProgress = it / 100f }
-        )
 
         setupSeekbar(
             seekBar = gapWidthSeekbar,

@@ -59,18 +59,7 @@ class DonutProgressView @JvmOverloads constructor(
      * Eg. when one line has 50% of total graph length,
      * setting this to 0.5f will result in that line being animated to 25% of total graph length.
      */
-    var masterProgress: Float = DEFAULT_MASTER_PROGRESS
-        set(value) {
-            if (value !in 0f..1f) {
-                return
-            }
-
-            field = value
-
-            bgLine.mMasterProgress = value
-            donutSectionLines.forEach { it.mMasterProgress = value }
-            invalidate()
-        }
+    private var masterProgress: Float = DEFAULT_MASTER_PROGRESS
 
     /**
      * Stroke width of all lines in pixels.
