@@ -26,7 +26,6 @@ class PlaygroundActivity : AppCompatActivity() {
     private val blackSectionText by lazy { findViewById<TextView>(R.id.black_section_text) }
     private val greenSectionText by lazy { findViewById<TextView>(R.id.green_section_text) }
     private val orangeSectionText by lazy { findViewById<TextView>(R.id.orange_section_text) }
-    private val interpolatorRadioGroup by lazy { findViewById<RadioGroup>(R.id.interpolator_radio_group) }
 
     private var sections: List<DonutChartSection> = listOf()
 
@@ -55,32 +54,14 @@ class PlaygroundActivity : AppCompatActivity() {
             )
         )
 
-        updateIndicators()
-        initControls()
         Handler().postDelayed({
             fillData()
-            runInitialAnimation()
         }, 800)
-    }
-
-    private fun runInitialAnimation() {
-        ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 1000
-            interpolator = FastOutSlowInInterpolator()
-            addUpdateListener {
-                donutChartView.alpha = it.animatedValue as Float
-            }
-
-            start()
-        }
     }
 
     private fun fillData() {
         donutChartView.submitData(sections)
-        updateIndicators()
-    }
 
-    private fun updateIndicators() {
         updateIndicatorAmount(BlackCategory, blackSectionText)
         updateIndicatorAmount(GreenCategory, greenSectionText)
         updateIndicatorAmount(OrangeCategory, orangeSectionText)
@@ -100,25 +81,4 @@ class PlaygroundActivity : AppCompatActivity() {
             }
     }
 
-    private fun initControls() {
-
-        val interpolators = listOf(
-            AnimationUtils.loadInterpolator(this, android.R.interpolator.decelerate_quint),
-            AnimationUtils.loadInterpolator(this, android.R.interpolator.accelerate_quint),
-            AnimationUtils.loadInterpolator(this, android.R.interpolator.accelerate_decelerate),
-            AnimationUtils.loadInterpolator(this, android.R.interpolator.linear),
-            AnimationUtils.loadInterpolator(this, android.R.interpolator.bounce)
-        )
-
-        interpolatorRadioGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
-            for (i in 0 until radioGroup.childCount) {
-                if (radioGroup.getChildAt(i).id == checkedId) {
-                    donutChartView.animationInterpolator = interpolators[i]
-                    fillData()
-                    break
-                }
-            }
-        }
-
-    }
 }
