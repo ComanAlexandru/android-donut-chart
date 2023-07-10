@@ -75,24 +75,6 @@ class DonutProgressView @JvmOverloads constructor(
         }
 
     /**
-     * Size of gap opening in degrees.
-     */
-    private var gapWidthDegrees: Float = 0f
-
-    /**
-     * Angle in degrees, at which the gap will be displayed.
-     */
-    //TODO: gapAngleDegrees should disappear, instead a function should calculate gap angle for each section (gap angle is where the section starts in radians)
-    private var gapAngleDegrees: Float = 270f
-        set(value) {
-            field = value
-
-            //TODO: mGapAngleDegrees should be calculated individually for each section to precede the anterior one
-            donutSectionLines.forEach { it.mGapAngleDegrees = value }
-            invalidate()
-        }
-
-    /**
      * Interpolator used for state change animations.
      */
     var animationInterpolator: Interpolator = DEFAULT_INTERPOLATOR
@@ -163,6 +145,8 @@ class DonutProgressView @JvmOverloads constructor(
     fun submitData(sections: List<DonutSection>) {
         assertDataConsistency(sections)
 
+        this.cap = sections.sumByFloat {  it.amount }
+
         sections
             .filter { it.amount >= 0f }
             .forEach { section ->
@@ -176,8 +160,7 @@ class DonutProgressView @JvmOverloads constructor(
                             lineColor = newLineColor,
                             lineStrokeWidth = strokeWidth,
                             length = 0f,
-                            gapWidthDegrees = gapWidthDegrees,
-                            gapAngleDegrees = gapAngleDegrees
+                            gapAngleDegrees = calculateStartingAngle(section.amount, this.cap)
                         )
                     )
                 } else {
@@ -193,9 +176,11 @@ class DonutProgressView @JvmOverloads constructor(
             addAll(copy)
         }
 
-        this.cap = sections.sumByFloat {  it.amount }
-
         resolveState()
+    }
+
+    private fun calculateStartingAngle(weight: Float, totalWeight: Float): Float {
+        return 270f
     }
 
     /**
