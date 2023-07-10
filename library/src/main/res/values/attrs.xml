@@ -8,7 +8,6 @@
             <enum name="clockwise" value="0"/>
             <enum name="anticlockwise" value="1"/>
         </attr>
-        <attr name="donut_animateChanges" format="boolean"/>
         <attr name="donut_animationInterpolator" format="reference"/>
         <attr name="donut_animationDuration" format="integer"/>
     </declare-styleable>

@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="64dp"
-        app:donut_animateChanges="true"
         app:donut_animationDuration="1000"
         app:donut_animationInterpolator="@android:interpolator/decelerate_quint"
         app:donut_bgLineColor="@color/cloud"
@@ -195,21 +194,6 @@
                 </LinearLayout>
 
             </HorizontalScrollView>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/animations"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/anim_enabled_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/animation_enabled"/>
 
             <TextView
                 android:id="@+id/anim_duration_text"

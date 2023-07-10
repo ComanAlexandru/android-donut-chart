@@ -46,7 +46,6 @@ class PlaygroundActivity : AppCompatActivity() {
     private val removeButton by lazy { findViewById<TextView>(R.id.button_remove) }
     private val randomColorsButton by lazy { findViewById<TextView>(R.id.button_random_colors) }
     private val clearButton by lazy { findViewById<TextView>(R.id.button_clear) }
-    private val animationEnabledSwitch by lazy { findViewById<SwitchCompat>(R.id.anim_enabled_switch) }
     private val amountCapText by lazy { findViewById<TextView>(R.id.amount_cap_text) }
     private val amountTotalText by lazy { findViewById<TextView>(R.id.amount_total_text) }
     private val blackSectionText by lazy { findViewById<TextView>(R.id.black_section_text) }
@@ -210,11 +209,6 @@ class PlaygroundActivity : AppCompatActivity() {
         // endregion
 
         // region Animations
-
-        animationEnabledSwitch.isChecked = donutProgressView.animateChanges
-        animationEnabledSwitch.setOnCheckedChangeListener { _, isChecked ->
-            donutProgressView.animateChanges = isChecked
-        }
 
         setupSeekbar(
             seekBar = animationDurationSeekbar,

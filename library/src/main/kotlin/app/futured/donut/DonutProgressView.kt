@@ -36,7 +36,6 @@ class DonutProgressView @JvmOverloads constructor(
         private val DEFAULT_DIRECTION = DonutDirection.CLOCKWISE
         private val DEFAULT_BG_COLOR_RES = R.color.grey
 
-        private const val DEFAULT_ANIM_ENABLED = true
         private val DEFAULT_INTERPOLATOR = DecelerateInterpolator(1.5f)
         private const val DEFAULT_ANIM_DURATION_MS = 1000
     }
@@ -119,12 +118,6 @@ class DonutProgressView @JvmOverloads constructor(
         }
 
     /**
-     * If true, view will animate changes when new data is submitted.
-     * If false, state change will happen instantly.
-     */
-    var animateChanges: Boolean = DEFAULT_ANIM_ENABLED
-
-    /**
      * Interpolator used for state change animations.
      */
     var animationInterpolator: Interpolator = DEFAULT_INTERPOLATOR
@@ -180,11 +173,6 @@ class DonutProgressView @JvmOverloads constructor(
                 it.getFloat(R.styleable.DonutProgressView_donut_gapAngle, DEFAULT_GAP_ANGLE)
 
             direction = DonutDirection.values()[it.getInt(R.styleable.DonutProgressView_donut_direction, 0)]
-
-            animateChanges = it.getBoolean(
-                R.styleable.DonutProgressView_donut_animateChanges,
-                DEFAULT_ANIM_ENABLED
-            )
 
             animationDurationMs = it.getInt(
                 R.styleable.DonutProgressView_donut_animationDuration,
@@ -390,7 +378,7 @@ class DonutProgressView @JvmOverloads constructor(
         animationEnded: (() -> Unit)? = null
     ): ValueAnimator {
         return ValueAnimator.ofFloat(line.mLength, to).apply {
-            duration = if (animateChanges) animationDurationMs else 0L
+            duration = animationDurationMs
             interpolator = animationInterpolator
             addUpdateListener {
                 (it.animatedValue as? Float)?.let { animValue ->
