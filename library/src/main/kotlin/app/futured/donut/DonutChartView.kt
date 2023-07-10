@@ -14,7 +14,7 @@ import android.view.animation.Interpolator
 import androidx.core.animation.doOnEnd
 import app.futured.donut.extensions.sumByFloat
 
-class DonutProgressView @JvmOverloads constructor(
+class DonutChartView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -45,8 +45,8 @@ class DonutProgressView @JvmOverloads constructor(
     var animationInterpolator: Interpolator = DEFAULT_INTERPOLATOR
     private var animationDurationMs: Long = DEFAULT_ANIM_DURATION_MS.toLong()
 
-    private val donutSections = mutableListOf<DonutSection>()
-    private var donutSectionLines = mutableListOf<DonutSectionLine>()
+    private val donutChartSections = mutableListOf<DonutChartSection>()
+    private var sectionArcs = mutableListOf<SectionArc>()
     private var animatorSet: AnimatorSet? = null
 
     init {
@@ -74,6 +74,22 @@ class DonutProgressView @JvmOverloads constructor(
         typedArray.recycle()
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val originalWidth = MeasureSpec.getSize(widthMeasureSpec)
+
+        super.onMeasure(
+            widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY)
+        )
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.translate(centerX, centerY)
+
+        sectionArcs.forEach { it.draw(canvas) }
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         this.width = w
         this.height = h
@@ -87,17 +103,8 @@ class DonutProgressView @JvmOverloads constructor(
         updateLinesRadius()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val originalWidth = MeasureSpec.getSize(widthMeasureSpec)
-
-        super.onMeasure(
-            widthMeasureSpec,
-            MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY)
-        )
-    }
-
-    fun submitData(sections: List<DonutSection>) {
-        donutSectionLines.clear()
+    fun submitData(sections: List<DonutChartSection>) {
+        sectionArcs.clear()
 
         this.totalWeight = sections.sumByFloat { it.weight }
 
@@ -105,20 +112,20 @@ class DonutProgressView @JvmOverloads constructor(
             .filter { it.weight >= 0f }
             .forEach { section ->
                 val newLineColor = section.color
-                donutSectionLines.add(
+                sectionArcs.add(
                     index = 0,
-                    element = DonutSectionLine(
-                        label = section.label,
+                    element = SectionArc(
+                        id = section.id,
                         radius = circleRadius,
                         lineColor = newLineColor,
-                        lineStrokeWidth = strokeWidthPx,
+                        strokeWidth = strokeWidthPx,
                         length = 0f,
                         startAngleDegrees = calculateStartingAngle(section.weight, this.totalWeight)
                     )
                 )
             }
 
-        this.donutSections.apply {
+        this.donutChartSections.apply {
             val copy = ArrayList(sections)
             clear()
             addAll(copy)
@@ -135,7 +142,7 @@ class DonutProgressView @JvmOverloads constructor(
         animatorSet?.cancel()
         animatorSet = AnimatorSet()
 
-        val sectionAmounts = donutSectionLines.map { getAmountForSection(it.label) }
+        val sectionAmounts = sectionArcs.map { getAmountForSection(it.id) }
         val totalAmount = sectionAmounts.sumByFloat { it }
 
         val drawPercentages = sectionAmounts.mapIndexed { index, _ ->
@@ -147,7 +154,7 @@ class DonutProgressView @JvmOverloads constructor(
         }
 
         drawPercentages.forEachIndexed { index, newPercentage ->
-            val line = donutSectionLines[index]
+            val line = sectionArcs[index]
             val animator = animateLine(line, newPercentage) {
 
             }
@@ -158,9 +165,9 @@ class DonutProgressView @JvmOverloads constructor(
         animatorSet?.start()
     }
 
-    private fun getAmountForSection(sectionName: String): Float {
-        return donutSections
-            .filter { it.label == sectionName }
+    private fun getAmountForSection(sectionId: String): Float {
+        return donutChartSections
+            .filter { it.id == sectionId }
             .sumByFloat { it.weight }
     }
 
@@ -175,7 +182,7 @@ class DonutProgressView @JvmOverloads constructor(
         return thisLine + previousLine
     }
 
-    private fun animateLine(line: DonutSectionLine, to: Float, animationEnded: (() -> Unit)? = null): ValueAnimator {
+    private fun animateLine(line: SectionArc, to: Float, animationEnded: (() -> Unit)? = null): ValueAnimator {
         return ValueAnimator.ofFloat(line.mLength, to).apply {
             duration = animationDurationMs
             interpolator = animationInterpolator
@@ -197,14 +204,7 @@ class DonutProgressView @JvmOverloads constructor(
         val heightInner = height.toFloat() - paddingVertical
         this.circleRadius = Math.min(widthInner, heightInner) / 2f - strokeWidthPx / 2f
 
-        donutSectionLines.forEach { it.radius = circleRadius }
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        canvas.translate(centerX, centerY)
-
-        donutSectionLines.forEach { it.draw(canvas) }
+        sectionArcs.forEach { it.radius = circleRadius }
     }
 
     private fun dpToPx(dp: Float) = TypedValue.applyDimension(

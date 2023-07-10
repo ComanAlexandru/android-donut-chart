@@ -8,8 +8,8 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import app.futured.donut.DonutProgressView
-import app.futured.donut.DonutSection
+import app.futured.donut.DonutChartView
+import app.futured.donut.DonutChartSection
 import app.futured.donutsample.R
 import app.futured.donutsample.data.model.BlackCategory
 import app.futured.donutsample.data.model.DataCategory
@@ -22,30 +22,33 @@ import app.futured.donutsample.tools.extensions.visible
 
 class PlaygroundActivity : AppCompatActivity() {
 
-    private val donutProgressView by lazy { findViewById<DonutProgressView>(R.id.donut_view) }
+    private val donutChartView by lazy { findViewById<DonutChartView>(R.id.donut_view) }
     private val blackSectionText by lazy { findViewById<TextView>(R.id.black_section_text) }
     private val greenSectionText by lazy { findViewById<TextView>(R.id.green_section_text) }
     private val orangeSectionText by lazy { findViewById<TextView>(R.id.orange_section_text) }
     private val interpolatorRadioGroup by lazy { findViewById<RadioGroup>(R.id.interpolator_radio_group) }
 
-    private var sections: List<DonutSection> = listOf()
+    private var sections: List<DonutChartSection> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playground)
 
         sections = listOf(
-            DonutSection(
+            DonutChartSection(
+                "1",
                 BlackCategory.name,
                 getColorCompat(BlackCategory.colorRes),
                 5f
             ),
-            DonutSection(
+            DonutChartSection(
+                "2",
                 GreenCategory.name,
                 getColorCompat(GreenCategory.colorRes),
                 5f
             ),
-            DonutSection(
+            DonutChartSection(
+                "3",
                 OrangeCategory.name,
                 getColorCompat(OrangeCategory.colorRes),
                 5f
@@ -65,7 +68,7 @@ class PlaygroundActivity : AppCompatActivity() {
             duration = 1000
             interpolator = FastOutSlowInInterpolator()
             addUpdateListener {
-                donutProgressView.alpha = it.animatedValue as Float
+                donutChartView.alpha = it.animatedValue as Float
             }
 
             start()
@@ -73,7 +76,7 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private fun fillData() {
-        donutProgressView.submitData(sections)
+        donutChartView.submitData(sections)
         updateIndicators()
     }
 
@@ -110,7 +113,7 @@ class PlaygroundActivity : AppCompatActivity() {
         interpolatorRadioGroup.setOnCheckedChangeListener { radioGroup, checkedId ->
             for (i in 0 until radioGroup.childCount) {
                 if (radioGroup.getChildAt(i).id == checkedId) {
-                    donutProgressView.animationInterpolator = interpolators[i]
+                    donutChartView.animationInterpolator = interpolators[i]
                     fillData()
                     break
                 }

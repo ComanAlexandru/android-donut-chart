@@ -9,25 +9,18 @@ import android.graphics.Path
 import android.graphics.PathMeasure
 import kotlin.math.ceil
 
-internal class DonutSectionLine(
-    val label: String,
+internal class SectionArc(
+    val id: String,
     radius: Float,
-    lineColor: Int,
-    lineStrokeWidth: Float,
+    val lineColor: Int,
+    val strokeWidth: Float,
     length: Float,
-    startAngleDegrees: Float,
+    val startAngleDegrees: Float,
 ) {
 
-    companion object {
-        const val SIDES = 64
-    }
-
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeCap = Paint.Cap.ROUND
-        strokeWidth = this@DonutSectionLine.lineWidth
-        color = this@DonutSectionLine.lineColor
-    }
+    private val arcDrawLinesCount = 64
+    private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var path: Path = createPath()
 
     var radius: Float = 0.0f
         set(value) {
@@ -36,55 +29,44 @@ internal class DonutSectionLine(
             updatePathEffect()
         }
 
-    var lineColor: Int = 0
-        set(value) {
-            field = value
-            paint.color = value
-        }
-
-    var lineWidth: Float = 0.0f
-        set(value) {
-            field = value
-            paint.strokeWidth = value
-        }
-
     var mLength: Float = 0.0f
         set(value) {
             field = value
             updatePathEffect()
         }
 
-    var angleStartDegrees = 270f
-        set(value) {
-            field = value
-            updatePath()
-            updatePathEffect()
-        }
-
-    private var path: Path = createPath()
+    private val startAngleRadians: Double
 
     init {
+
+        paint.style = Paint.Style.STROKE
+        paint.strokeCap = Paint.Cap.ROUND
+        paint.strokeWidth = strokeWidth
+        paint.color = lineColor
+
+        this.startAngleRadians = startAngleDegrees.toRadians()
+
         this.radius = radius
-        this.lineColor = lineColor
-        this.lineWidth = lineStrokeWidth
         this.mLength = length
-        this.angleStartDegrees = startAngleDegrees
+
+    }
+
+    fun draw(canvas: Canvas) {
+        canvas.drawPath(path, paint)
     }
 
     private fun createPath(): Path {
         val path = Path()
 
-        val startAngleRadians = angleStartDegrees.toRadians()
-
         val endAngle = Math.PI * 2.0
-        val angleStep = endAngle / SIDES
+        val angleStep = endAngle / arcDrawLinesCount
 
         path.moveTo(
             radius * Math.cos(startAngleRadians).toFloat(),
             radius * Math.sin(startAngleRadians).toFloat()
         )
 
-        for (i in 1 until SIDES + 1) {
+        for (i in 1 until arcDrawLinesCount + 1) {
             path.lineTo(
                 radius * Math.cos(i * angleStep + startAngleRadians).toFloat(),
                 radius * Math.sin(i * angleStep + startAngleRadians).toFloat()
@@ -103,7 +85,7 @@ internal class DonutSectionLine(
         val drawnLength = ceil(pathLen.toDouble() * mLength).toFloat()
 
         paint.pathEffect = ComposePathEffect(
-            CornerPathEffect(pathLen / SIDES),
+            CornerPathEffect(pathLen / arcDrawLinesCount),
             DashPathEffect(
                 floatArrayOf(
                     drawnLength,
@@ -112,10 +94,6 @@ internal class DonutSectionLine(
                 0f
             )
         )
-    }
-
-    fun draw(canvas: Canvas) {
-        canvas.drawPath(path, paint)
     }
 
     private fun Float.toRadians() = Math.toRadians(this.toDouble())

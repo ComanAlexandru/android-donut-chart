@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="app.futured.donutsample.ui.PlaygroundActivity">
 
-    <app.futured.donut.DonutProgressView
+    <app.futured.donut.DonutChartView
         android:id="@+id/donut_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
