@@ -24,6 +24,7 @@ class DonutChartSection(
         strokeWidth: Float,
         length: Float,
         startAngleDegrees: Float,
+        endAngleDegrees: Float,
     ) {
 
         private val arcDrawLinesCount = 64
@@ -44,6 +45,7 @@ class DonutChartSection(
             }
 
         private val startAngleRadians: Double
+        private val endAngleRadians: Double
 
         init {
 
@@ -53,6 +55,7 @@ class DonutChartSection(
             paint.color = lineColor
 
             this.startAngleRadians = startAngleDegrees.toRadians()
+            this.endAngleRadians = endAngleDegrees.toRadians()
 
             this.radius = radius
             this.mLength = length

@@ -19,14 +19,16 @@ class DonutChartView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private var width = 0
-    private var height = 0
     private var circleRadius = 0f
+        private set(value) {
+            field = value
+            chartSections.forEach { it.drawableArc.radius = field }
+        }
 
     private val chartSections = arrayListOf<DonutChartSection>()
     private var totalWeight: Float = 0f
 
-    private var strokeWidthPx: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12f, resources.displayMetrics)
+    private var strokeWidthPx: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f, resources.displayMetrics)
     private var animationInterpolator: Interpolator = DecelerateInterpolator(1.5f)
     private var animatorSet: AnimatorSet? = null
 
@@ -41,16 +43,13 @@ class DonutChartView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.translate(this.width / 2f, this.height / 2f)
+        canvas.translate(width / 2f, height / 2f)
 
         chartSections.forEach { it.drawableArc.draw(canvas) }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        this.width = w
-        this.height = h
-
-        updateLinesRadius()
+        this.circleRadius = Math.min(width, height) / 2f - strokeWidthPx / 2f
     }
 
     fun submitData(sections: List<DonutChartSection>) {
@@ -66,14 +65,19 @@ class DonutChartView @JvmOverloads constructor(
                 section.color,
                 strokeWidthPx,
                 0f,
-                calculateStartingAngle(section.weight, this.totalWeight)
+                calculateStartAngle(section.weight, this.totalWeight),
+                calculateEndAngle(section.weight, this.totalWeight)
             )
         }
 
         resolveState()
     }
 
-    private fun calculateStartingAngle(weight: Float, totalWeight: Float): Float {
+    private fun calculateStartAngle(weight: Float, totalWeight: Float): Float {
+        return 270f
+    }
+
+    private fun calculateEndAngle(weight: Float, totalWeight: Float): Float {
         return 270f
     }
 
@@ -84,7 +88,7 @@ class DonutChartView @JvmOverloads constructor(
         val sectionWeights = chartSections.map { it.weight }
 
         val drawPercentages = sectionWeights.mapIndexed { index, _ ->
-            getDrawAmountForLine(sectionWeights, index) / totalWeight
+            getWeightOfTotalForLine(sectionWeights, index) / totalWeight
         }
 
         drawPercentages.forEachIndexed { index, newPercentage ->
@@ -99,13 +103,16 @@ class DonutChartView @JvmOverloads constructor(
         animatorSet?.start()
     }
 
-    private fun getDrawAmountForLine(amounts: List<Float>, index: Int): Float {
+    private fun getWeightOfTotalForLine(amounts: List<Float>, index: Int): Float {
         if (index >= amounts.size) {
             return 0f
         }
 
         val thisLine = amounts[index]
-        val previousLine = getDrawAmountForLine(amounts, index + 1) // Length of line above this one
+        val previousLine = getWeightOfTotalForLine(amounts, index + 1) // Length of line above this one
+
+        log("index", index.toString())
+        log("drawAmount", (thisLine + previousLine).toString())
 
         return thisLine + previousLine
     }
@@ -128,16 +135,7 @@ class DonutChartView @JvmOverloads constructor(
         }
     }
 
-    private fun updateLinesRadius() {
-        val widthInner = width.toFloat() - (paddingLeft + paddingRight).toFloat()
-        val heightInner = height.toFloat() - (paddingTop + paddingBottom).toFloat()
-
-        this.circleRadius = Math.min(widthInner, heightInner) / 2f - strokeWidthPx / 2f
-
-        chartSections.forEach { it.drawableArc.radius = circleRadius }
-    }
-
     private fun log(label: String, value: String) {
-        Log.w("DonutProgressView", "$label: $value")
+        Log.e("DonutProgressView", "$label: $value")
     }
 }
