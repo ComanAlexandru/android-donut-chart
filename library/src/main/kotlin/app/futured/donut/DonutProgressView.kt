@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import app.futured.donut.extensions.hasDuplicatesBy
 import app.futured.donut.extensions.sumByFloat
-import app.futured.donut.model.DonutDirection
 import app.futured.donut.model.DonutSection
 
 class DonutProgressView @JvmOverloads constructor(
@@ -32,7 +31,6 @@ class DonutProgressView @JvmOverloads constructor(
 
         private const val DEFAULT_MASTER_PROGRESS = 1f
         private const val DEFAULT_STROKE_WIDTH_DP = 12f
-        private val DEFAULT_DIRECTION = DonutDirection.CLOCKWISE
         private val DEFAULT_BG_COLOR_RES = R.color.grey
 
         private val DEFAULT_INTERPOLATOR = DecelerateInterpolator(1.5f)
@@ -107,18 +105,6 @@ class DonutProgressView @JvmOverloads constructor(
         }
 
     /**
-     * Direction at which view will animate it's progress lines.
-     */
-    var direction: DonutDirection = DEFAULT_DIRECTION
-        set(value) {
-            field = value
-
-            bgLine.mDirection = value
-            donutSectionLines.forEach { it.mDirection = value }
-            invalidate()
-        }
-
-    /**
      * Interpolator used for state change animations.
      */
     var animationInterpolator: Interpolator = DEFAULT_INTERPOLATOR
@@ -140,8 +126,7 @@ class DonutProgressView @JvmOverloads constructor(
         masterProgress = masterProgress,
         length = 1f,
         gapWidthDegrees = gapWidthDegrees,
-        gapAngleDegrees = gapAngleDegrees,
-        direction = direction
+        gapAngleDegrees = gapAngleDegrees
     )
 
     init {
@@ -169,8 +154,6 @@ class DonutProgressView @JvmOverloads constructor(
                         DEFAULT_BG_COLOR_RES
                     )
                 )
-
-            direction = DonutDirection.values()[it.getInt(R.styleable.DonutProgressView_donut_direction, 0)]
 
             animationDurationMs = it.getInt(
                 R.styleable.DonutProgressView_donut_animationDuration,
@@ -218,8 +201,7 @@ class DonutProgressView @JvmOverloads constructor(
                             masterProgress = masterProgress,
                             length = 0f,
                             gapWidthDegrees = gapWidthDegrees,
-                            gapAngleDegrees = gapAngleDegrees,
-                            direction = direction
+                            gapAngleDegrees = gapAngleDegrees
                         )
                     )
                 } else {
