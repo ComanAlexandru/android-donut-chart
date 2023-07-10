@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Donut Graph Sample</string>
-    <string name="amount_cap">Amount cap: %.2f</string>
-    <string name="amount_total">Total amount: %.2f</string>
     <string name="float_2f">%.2f</string>
     <string name="animation_duration">Animation duration: %d ms</string>
     <string name="animation_interpolators">Interpolators</string>

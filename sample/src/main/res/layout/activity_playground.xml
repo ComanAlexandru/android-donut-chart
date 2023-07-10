@@ -29,23 +29,6 @@
         app:layout_constraintTop_toTopOf="@id/donut_view">
 
         <TextView
-            android:id="@+id/amount_cap_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/amount_cap"
-            android:textColor="@color/process_black"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/amount_total_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/amount_total"
-            android:textColor="@color/process_black"
-            android:textStyle="bold"/>
-
-        <TextView
             android:id="@+id/black_section_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

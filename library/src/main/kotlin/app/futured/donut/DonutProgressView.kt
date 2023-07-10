@@ -40,12 +40,7 @@ class DonutProgressView @JvmOverloads constructor(
 
     private var strokeWidthPx = dpToPx(DEFAULT_STROKE_WIDTH_DP)
 
-    /**
-     * Maximum value of sum of all entries in view, after which
-     * all lines start to resize proportionally to amounts in their entry categories.
-     */
-    var totalWeight: Float = 0f
-        private set
+    private var totalWeight: Float = 0f
 
     var animationInterpolator: Interpolator = DEFAULT_INTERPOLATOR
     private var animationDurationMs: Long = DEFAULT_ANIM_DURATION_MS.toLong()

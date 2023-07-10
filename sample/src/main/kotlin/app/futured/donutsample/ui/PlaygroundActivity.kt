@@ -23,8 +23,6 @@ import app.futured.donutsample.tools.extensions.visible
 class PlaygroundActivity : AppCompatActivity() {
 
     private val donutProgressView by lazy { findViewById<DonutProgressView>(R.id.donut_view) }
-    private val amountCapText by lazy { findViewById<TextView>(R.id.amount_cap_text) }
-    private val amountTotalText by lazy { findViewById<TextView>(R.id.amount_total_text) }
     private val blackSectionText by lazy { findViewById<TextView>(R.id.black_section_text) }
     private val greenSectionText by lazy { findViewById<TextView>(R.id.green_section_text) }
     private val orangeSectionText by lazy { findViewById<TextView>(R.id.orange_section_text) }
@@ -80,12 +78,6 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private fun updateIndicators() {
-        amountCapText.text = getString(R.string.amount_cap, donutProgressView.totalWeight)
-        amountTotalText.text = getString(
-            R.string.amount_total,
-            sections.sumByFloat { it.weight }
-        )
-
         updateIndicatorAmount(BlackCategory, blackSectionText)
         updateIndicatorAmount(GreenCategory, greenSectionText)
         updateIndicatorAmount(OrangeCategory, orangeSectionText)
