@@ -107,12 +107,12 @@ class PlaygroundActivity : AppCompatActivity() {
             DonutSection(
                 GreenCategory.name,
                 getColorCompat(GreenCategory.colorRes),
-                2f
+                1.2f
             ),
             DonutSection(
                 OrangeCategory.name,
                 getColorCompat(OrangeCategory.colorRes),
-                4f
+                1.4f
             )
         )
 
