@@ -13,7 +13,6 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import app.futured.donut.model.DonutDirection
 import app.futured.donut.DonutProgressView
 import app.futured.donut.model.DonutSection
-import app.futured.donut.model.DonutStrokeCap
 import app.futured.donutsample.R
 import app.futured.donutsample.data.model.BlackCategory
 import app.futured.donutsample.data.model.DataCategory
@@ -37,14 +36,10 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private val donutProgressView by lazy { findViewById<DonutProgressView>(R.id.donut_view) }
-    private val gapWidthSeekbar by lazy { findViewById<SeekBar>(R.id.gap_width_seekbar) }
-    private val gapWidthText by lazy { findViewById<TextView>(R.id.gap_width_text) }
     private val gapAngleSeekbar by lazy { findViewById<SeekBar>(R.id.gap_angle_seekbar) }
     private val gapAngleText by lazy { findViewById<TextView>(R.id.gap_angle_text) }
     private val strokeWidthSeekbar by lazy { findViewById<SeekBar>(R.id.stroke_width_seekbar) }
     private val strokeWidthText by lazy { findViewById<TextView>(R.id.stroke_width_text) }
-    private val capSeekbar by lazy { findViewById<SeekBar>(R.id.cap_seekbar) }
-    private val capText by lazy { findViewById<TextView>(R.id.cap_text) }
     private val animationDurationSeekbar by lazy { findViewById<SeekBar>(R.id.anim_duration_seekbar) }
     private val animationDurationText by lazy { findViewById<TextView>(R.id.anim_duration_text) }
     private val addButton by lazy { findViewById<TextView>(R.id.button_add) }
@@ -59,7 +54,6 @@ class PlaygroundActivity : AppCompatActivity() {
     private val orangeSectionText by lazy { findViewById<TextView>(R.id.orange_section_text) }
     private val interpolatorRadioGroup by lazy { findViewById<RadioGroup>(R.id.interpolator_radio_group) }
     private val directionSwitch by lazy { findViewById<SwitchCompat>(R.id.direction_switch) }
-    private val strokeCapRadioGroup by lazy { findViewById<RadioGroup>(R.id.stroke_caps_radio_group) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +69,6 @@ class PlaygroundActivity : AppCompatActivity() {
     }
 
     private fun setupDonut() {
-        donutProgressView.cap = 5f
         donutProgressView.gapAngleDegrees = 0f
     }
 
@@ -101,12 +94,12 @@ class PlaygroundActivity : AppCompatActivity() {
             DonutSection(
                 GreenCategory.name,
                 getColorCompat(GreenCategory.colorRes),
-                1.2f
+                2f
             ),
             DonutSection(
                 OrangeCategory.name,
                 getColorCompat(OrangeCategory.colorRes),
-                1.4f
+                4f
             )
         )
 
@@ -146,14 +139,6 @@ class PlaygroundActivity : AppCompatActivity() {
         // region Styles
 
         setupSeekbar(
-            seekBar = gapWidthSeekbar,
-            titleTextView = gapWidthText,
-            initProgress = donutProgressView.gapWidthDegrees.toInt(),
-            getTitleText = { getString(R.string.gap_width, it) },
-            onProgressChanged = { donutProgressView.gapWidthDegrees = it.toFloat() }
-        )
-
-        setupSeekbar(
             seekBar = gapAngleSeekbar,
             titleTextView = gapAngleText,
             initProgress = donutProgressView.gapAngleDegrees.toInt(),
@@ -184,17 +169,6 @@ class PlaygroundActivity : AppCompatActivity() {
         // endregion
 
         // region Data
-
-        setupSeekbar(
-            seekBar = capSeekbar,
-            titleTextView = capText,
-            initProgress = donutProgressView.cap.toInt(),
-            getTitleText = { getString(R.string.amount_cap, it.toFloat()) },
-            onProgressChanged = {
-                donutProgressView.cap = it.toFloat()
-                updateIndicators()
-            }
-        )
 
         // Add random amount to random section
         addButton.setOnClickListener {
@@ -264,14 +238,6 @@ class PlaygroundActivity : AppCompatActivity() {
                     donutProgressView.animationInterpolator = interpolators[i]
                     break
                 }
-            }
-        }
-
-        strokeCapRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            donutProgressView.strokeCap = when (checkedId) {
-                R.id.stroke_cap_round -> DonutStrokeCap.ROUND
-                R.id.stroke_cap_butt -> DonutStrokeCap.BUTT
-                else -> error("Unexpected id: $checkedId")
             }
         }
 

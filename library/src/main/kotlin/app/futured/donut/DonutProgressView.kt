@@ -20,7 +20,6 @@ import app.futured.donut.extensions.hasDuplicatesBy
 import app.futured.donut.extensions.sumByFloat
 import app.futured.donut.model.DonutDirection
 import app.futured.donut.model.DonutSection
-import app.futured.donut.model.DonutStrokeCap
 
 class DonutProgressView @JvmOverloads constructor(
     context: Context,
@@ -33,9 +32,7 @@ class DonutProgressView @JvmOverloads constructor(
 
         private const val DEFAULT_MASTER_PROGRESS = 1f
         private const val DEFAULT_STROKE_WIDTH_DP = 12f
-        private const val DEFAULT_GAP_WIDTH = 45f
         private const val DEFAULT_GAP_ANGLE = 90f
-        private const val DEFAULT_CAP = 1f
         private val DEFAULT_DIRECTION = DonutDirection.CLOCKWISE
         private val DEFAULT_BG_COLOR_RES = R.color.grey
 
@@ -75,26 +72,11 @@ class DonutProgressView @JvmOverloads constructor(
         }
 
     /**
-     * Stroke cap of all lines.
-     */
-    var strokeCap = DonutStrokeCap.ROUND
-        set(value) {
-            field = value
-
-            bgLine.mLineStrokeCap = value
-            donutSectionLines.forEach { it.mLineStrokeCap = value }
-            invalidate()
-        }
-
-    /**
      * Maximum value of sum of all entries in view, after which
      * all lines start to resize proportionally to amounts in their entry categories.
      */
-    var cap: Float = DEFAULT_CAP
-        set(value) {
-            field = value
-            resolveState()
-        }
+    var cap: Float = 0f
+        private set
 
     /**
      * Color of background line.
@@ -110,14 +92,7 @@ class DonutProgressView @JvmOverloads constructor(
     /**
      * Size of gap opening in degrees.
      */
-    var gapWidthDegrees: Float = DEFAULT_GAP_WIDTH
-        set(value) {
-            field = value
-
-            bgLine.mGapWidthDegrees = value
-            donutSectionLines.forEach { it.mGapWidthDegrees = value }
-            invalidate()
-        }
+    private var gapWidthDegrees: Float = 0f
 
     /**
      * Angle in degrees, at which the gap will be displayed.
@@ -168,7 +143,6 @@ class DonutProgressView @JvmOverloads constructor(
         radius = radius,
         lineColor = bgLineColor,
         lineStrokeWidth = strokeWidth,
-        lineStrokeCap = strokeCap,
         masterProgress = masterProgress,
         length = 1f,
         gapWidthDegrees = gapWidthDegrees,
@@ -193,10 +167,6 @@ class DonutProgressView @JvmOverloads constructor(
                 dpToPx(DEFAULT_STROKE_WIDTH_DP).toInt()
             ).toFloat()
 
-            val strokeCapInt = it.getInt(R.styleable.DonutProgressView_donut_strokeCap, DonutStrokeCap.ROUND.index)
-            val strokeCapNullable = DonutStrokeCap.values().find { enum -> enum.index == strokeCapInt }
-            strokeCap = strokeCapNullable ?: error("Unexpected value $strokeCapInt")
-
             bgLineColor =
                 it.getColor(
                     R.styleable.DonutProgressView_donut_bgLineColor,
@@ -206,8 +176,6 @@ class DonutProgressView @JvmOverloads constructor(
                     )
                 )
 
-            gapWidthDegrees =
-                it.getFloat(R.styleable.DonutProgressView_donut_gapWidth, DEFAULT_GAP_WIDTH)
             gapAngleDegrees =
                 it.getFloat(R.styleable.DonutProgressView_donut_gapAngle, DEFAULT_GAP_ANGLE)
 
@@ -232,8 +200,6 @@ class DonutProgressView @JvmOverloads constructor(
                             DEFAULT_INTERPOLATOR
                         }
                     }
-
-            cap = it.getFloat(R.styleable.DonutProgressView_donut_cap, DEFAULT_CAP)
         }
     }
 
@@ -263,7 +229,6 @@ class DonutProgressView @JvmOverloads constructor(
                             radius = radius,
                             lineColor = newLineColor,
                             lineStrokeWidth = strokeWidth,
-                            lineStrokeCap = strokeCap,
                             masterProgress = masterProgress,
                             length = 0f,
                             gapWidthDegrees = gapWidthDegrees,
@@ -283,6 +248,8 @@ class DonutProgressView @JvmOverloads constructor(
             clear()
             addAll(copy)
         }
+
+        this.cap = sections.sumByFloat {  it.amount }
 
         resolveState()
     }

@@ -8,7 +8,6 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathMeasure
 import app.futured.donut.model.DonutDirection
-import app.futured.donut.model.DonutStrokeCap
 import kotlin.math.ceil
 
 internal class DonutProgressLine(
@@ -16,7 +15,6 @@ internal class DonutProgressLine(
     radius: Float,
     lineColor: Int,
     lineStrokeWidth: Float,
-    lineStrokeCap: DonutStrokeCap,
     masterProgress: Float,
     length: Float,
     gapWidthDegrees: Float,
@@ -30,7 +28,7 @@ internal class DonutProgressLine(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeCap = lineStrokeCap.cap
+        strokeCap = Paint.Cap.ROUND
         strokeWidth = mLineStrokeWidth
         color = mLineColor
     }
@@ -52,12 +50,6 @@ internal class DonutProgressLine(
         set(value) {
             field = value
             paint.strokeWidth = value
-        }
-
-    var mLineStrokeCap: DonutStrokeCap = DonutStrokeCap.ROUND
-        set(value) {
-            field = value
-            paint.strokeCap = value.cap
         }
 
     var mMasterProgress: Float = 0.0f
@@ -99,7 +91,6 @@ internal class DonutProgressLine(
         this.mRadius = radius
         this.mLineColor = lineColor
         this.mLineStrokeWidth = lineStrokeWidth
-        this.mLineStrokeCap = lineStrokeCap
         this.mMasterProgress = masterProgress
         this.mLength = length
         this.mGapWidthDegrees = gapWidthDegrees
