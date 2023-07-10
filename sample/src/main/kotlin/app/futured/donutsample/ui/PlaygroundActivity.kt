@@ -1,4 +1,4 @@
-package app.futured.donutsample.ui.playground
+package app.futured.donutsample.ui
 
 import android.animation.ValueAnimator
 import android.os.Bundle

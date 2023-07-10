@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.PlaygroundActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
@@ -24,9 +24,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.playground.PlaygroundActivity"/>
-
-        <activity android:name=".ui.playground.compose.PlaygroundComposeActivity"/>
     </application>
 
 </manifest>

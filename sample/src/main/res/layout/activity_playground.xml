@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="app.futured.donutsample.ui.playground.PlaygroundActivity">
+    tools:context="app.futured.donutsample.ui.PlaygroundActivity">
 
     <app.futured.donut.DonutProgressView
         android:id="@+id/donut_view"

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Donut Sample</string>
+    <string name="app_name">Donut Graph Sample</string>
     <string name="graph_style">Graph style</string>
     <string name="gap_width">Gap width: %d°</string>
     <string name="gap_angle">Gap angle: %d°</string>
