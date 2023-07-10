@@ -38,19 +38,19 @@ class PlaygroundActivity : AppCompatActivity() {
                 "1",
                 BlackCategory.name,
                 getColorCompat(BlackCategory.colorRes),
-                5f
+                12f
             ),
             DonutChartSection(
                 "2",
                 GreenCategory.name,
                 getColorCompat(GreenCategory.colorRes),
-                5f
+                3f
             ),
             DonutChartSection(
                 "3",
                 OrangeCategory.name,
                 getColorCompat(OrangeCategory.colorRes),
-                5f
+                1f
             )
         )
 

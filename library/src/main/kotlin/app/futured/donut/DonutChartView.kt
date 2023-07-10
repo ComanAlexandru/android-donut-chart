@@ -111,6 +111,7 @@ class DonutChartView @JvmOverloads constructor(
     }
 
     private fun animateLine(line: DonutChartSection.SectionArc, to: Float, animationEnded: (() -> Unit)? = null): ValueAnimator {
+        log("animateTo", to.toString())
         return ValueAnimator.ofFloat(line.mLength, to).apply {
             duration = 1000
             interpolator = animationInterpolator
