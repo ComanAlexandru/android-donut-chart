@@ -40,7 +40,6 @@ android {
 dependencies {
     implementation(kotlin(Deps.Kotlin.stdlib, KotlinCompilerVersion.VERSION))
     implementation(project(":library"))
-    implementation(project(":library-compose"))
 
     implementation(Deps.AndroidX.ktx)
     implementation(Deps.AndroidX.appcompat)
