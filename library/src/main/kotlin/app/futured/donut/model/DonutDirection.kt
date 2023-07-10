@@ -1,4 +1,4 @@
-package app.futured.donut
+package app.futured.donut.model
 
 /**
  * Enum to specify a direction at which view will animate it's progress lines.

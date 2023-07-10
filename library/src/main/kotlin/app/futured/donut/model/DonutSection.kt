@@ -1,4 +1,4 @@
-package app.futured.donut
+package app.futured.donut.model
 
 /**
  * Data class representing section of the graph containing [Float] amount, name and color of progress line.

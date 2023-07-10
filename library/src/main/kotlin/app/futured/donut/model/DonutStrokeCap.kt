@@ -1,4 +1,4 @@
-package app.futured.donut
+package app.futured.donut.model
 
 import android.graphics.Paint
 

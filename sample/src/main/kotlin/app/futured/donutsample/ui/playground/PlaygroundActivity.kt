@@ -10,10 +10,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-import app.futured.donut.DonutDirection
+import app.futured.donut.model.DonutDirection
 import app.futured.donut.DonutProgressView
-import app.futured.donut.DonutSection
-import app.futured.donut.DonutStrokeCap
+import app.futured.donut.model.DonutSection
+import app.futured.donut.model.DonutStrokeCap
 import app.futured.donutsample.R
 import app.futured.donutsample.data.model.BlackCategory
 import app.futured.donutsample.data.model.DataCategory
@@ -107,12 +107,12 @@ class PlaygroundActivity : AppCompatActivity() {
             DonutSection(
                 GreenCategory.name,
                 getColorCompat(GreenCategory.colorRes),
-                1.2f
+                2f
             ),
             DonutSection(
                 OrangeCategory.name,
                 getColorCompat(OrangeCategory.colorRes),
-                1.4f
+                4f
             )
         )
 

@@ -7,6 +7,8 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathMeasure
+import app.futured.donut.model.DonutDirection
+import app.futured.donut.model.DonutStrokeCap
 import kotlin.math.ceil
 
 internal class DonutProgressLine(

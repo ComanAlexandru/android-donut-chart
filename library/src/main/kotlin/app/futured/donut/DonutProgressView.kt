@@ -18,6 +18,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import app.futured.donut.extensions.hasDuplicatesBy
 import app.futured.donut.extensions.sumByFloat
+import app.futured.donut.model.DonutDirection
+import app.futured.donut.model.DonutSection
+import app.futured.donut.model.DonutStrokeCap
 
 class DonutProgressView @JvmOverloads constructor(
     context: Context,
@@ -65,7 +68,7 @@ class DonutProgressView @JvmOverloads constructor(
             field = value
 
             bgLine.mMasterProgress = value
-            lines.forEach { it.mMasterProgress = value }
+            donutSectionLines.forEach { it.mMasterProgress = value }
             invalidate()
         }
 
@@ -77,7 +80,7 @@ class DonutProgressView @JvmOverloads constructor(
             field = value
 
             bgLine.mLineStrokeWidth = value
-            lines.forEach { it.mLineStrokeWidth = value }
+            donutSectionLines.forEach { it.mLineStrokeWidth = value }
             updateLinesRadius()
             invalidate()
         }
@@ -90,7 +93,7 @@ class DonutProgressView @JvmOverloads constructor(
             field = value
 
             bgLine.mLineStrokeCap = value
-            lines.forEach { it.mLineStrokeCap = value }
+            donutSectionLines.forEach { it.mLineStrokeCap = value }
             invalidate()
         }
 
@@ -123,7 +126,7 @@ class DonutProgressView @JvmOverloads constructor(
             field = value
 
             bgLine.mGapWidthDegrees = value
-            lines.forEach { it.mGapWidthDegrees = value }
+            donutSectionLines.forEach { it.mGapWidthDegrees = value }
             invalidate()
         }
 
@@ -135,7 +138,7 @@ class DonutProgressView @JvmOverloads constructor(
             field = value
 
             bgLine.mGapAngleDegrees = value
-            lines.forEach { it.mGapAngleDegrees = value }
+            donutSectionLines.forEach { it.mGapAngleDegrees = value }
             invalidate()
         }
 
@@ -147,7 +150,7 @@ class DonutProgressView @JvmOverloads constructor(
             field = value
 
             bgLine.mDirection = value
-            lines.forEach { it.mDirection = value }
+            donutSectionLines.forEach { it.mDirection = value }
             invalidate()
         }
 
@@ -167,8 +170,8 @@ class DonutProgressView @JvmOverloads constructor(
      */
     var animationDurationMs: Long = DEFAULT_ANIM_DURATION_MS.toLong()
 
-    private val data = mutableListOf<DonutSection>()
-    private val lines = mutableListOf<DonutProgressLine>()
+    private val donutSections = mutableListOf<DonutSection>()
+    private val donutSectionLines = mutableListOf<DonutProgressLine>()
     private var animatorSet: AnimatorSet? = null
 
     private val bgLine = DonutProgressLine(
@@ -248,7 +251,7 @@ class DonutProgressView @JvmOverloads constructor(
     /**
      * Returns current data.
      */
-    fun getData() = data.toList()
+    fun getData() = donutSections.toList()
 
     /**
      * Submits new [sections] to the view.
@@ -264,7 +267,7 @@ class DonutProgressView @JvmOverloads constructor(
             .forEach { section ->
                 val newLineColor = section.color
                 if (hasEntriesForSection(section.name).not()) {
-                    lines.add(
+                    donutSectionLines.add(
                         index = 0,
                         element = DonutProgressLine(
                             name = section.name,
@@ -280,13 +283,13 @@ class DonutProgressView @JvmOverloads constructor(
                         )
                     )
                 } else {
-                    lines
+                    donutSectionLines
                         .filter { it.name == section.name }
                         .forEach { it.mLineColor = newLineColor }
                 }
             }
 
-        this.data.apply {
+        this.donutSections.apply {
             val copy = ArrayList(sections)
             clear()
             addAll(copy)
@@ -300,17 +303,17 @@ class DonutProgressView @JvmOverloads constructor(
      * creates new section internally.
      */
     fun addAmount(sectionName: String, amount: Float, color: Int? = null) {
-        for (i in 0 until data.size) {
-            if (data[i].name == sectionName) {
-                data[i] = data[i].copy(amount = data[i].amount + amount)
-                submitData(data)
+        for (i in 0 until donutSections.size) {
+            if (donutSections[i].name == sectionName) {
+                donutSections[i] = donutSections[i].copy(amount = donutSections[i].amount + amount)
+                submitData(donutSections)
                 return
             }
         }
 
         color?.let {
             submitData(
-                data + DonutSection(
+                donutSections + DonutSection(
                     name = sectionName,
                     color = it,
                     amount = amount
@@ -329,14 +332,14 @@ class DonutProgressView @JvmOverloads constructor(
      * Does nothing if section does not exist.
      */
     fun setAmount(sectionName: String, amount: Float) {
-        for (i in 0 until data.size) {
-            if (data[i].name == sectionName) {
+        for (i in 0 until donutSections.size) {
+            if (donutSections[i].name == sectionName) {
                 if (amount > 0) {
-                    data[i] = data[i].copy(amount = amount)
+                    donutSections[i] = donutSections[i].copy(amount = amount)
                 } else {
-                    data.removeAt(i)
+                    donutSections.removeAt(i)
                 }
-                submitData(data)
+                submitData(donutSections)
                 return
             }
         }
@@ -349,15 +352,15 @@ class DonutProgressView @JvmOverloads constructor(
      * If amount gets below zero, removes the section from view.
      */
     fun removeAmount(sectionName: String, amount: Float) {
-        for (i in 0 until data.size) {
-            if (data[i].name == sectionName) {
-                val resultAmount = data[i].amount - amount
+        for (i in 0 until donutSections.size) {
+            if (donutSections[i].name == sectionName) {
+                val resultAmount = donutSections[i].amount - amount
                 if (resultAmount > 0) {
-                    data[i] = data[i].copy(amount = resultAmount)
+                    donutSections[i] = donutSections[i].copy(amount = resultAmount)
                 } else {
-                    data.removeAt(i)
+                    donutSections.removeAt(i)
                 }
-                submitData(data)
+                submitData(donutSections)
                 return
             }
         }
@@ -380,7 +383,7 @@ class DonutProgressView @JvmOverloads constructor(
         animatorSet?.cancel()
         animatorSet = AnimatorSet()
 
-        val sectionAmounts = lines.map { getAmountForSection(it.name) }
+        val sectionAmounts = donutSectionLines.map { getAmountForSection(it.name) }
         val totalAmount = sectionAmounts.sumByFloat { it }
 
         val drawPercentages = sectionAmounts.mapIndexed { index, _ ->
@@ -392,7 +395,7 @@ class DonutProgressView @JvmOverloads constructor(
         }
 
         drawPercentages.forEachIndexed { index, newPercentage ->
-            val line = lines[index]
+            val line = donutSectionLines[index]
             val animator = animateLine(line, newPercentage) {
                 if (!hasEntriesForSection(line.name)) {
                     removeLine(line)
@@ -406,7 +409,7 @@ class DonutProgressView @JvmOverloads constructor(
     }
 
     private fun getAmountForSection(sectionName: String): Float {
-        return data
+        return donutSections
             .filter { it.name == sectionName }
             .sumByFloat { it.amount }
     }
@@ -423,7 +426,7 @@ class DonutProgressView @JvmOverloads constructor(
     }
 
     private fun hasEntriesForSection(section: String) =
-        data.indexOfFirst { it.name == section } > -1
+        donutSections.indexOfFirst { it.name == section } > -1
 
     private fun animateLine(
         line: DonutProgressLine,
@@ -447,7 +450,7 @@ class DonutProgressView @JvmOverloads constructor(
     }
 
     private fun removeLine(line: DonutProgressLine) {
-        lines.remove(line)
+        donutSectionLines.remove(line)
         invalidate()
     }
 
@@ -479,7 +482,7 @@ class DonutProgressView @JvmOverloads constructor(
         this.radius = Math.min(ww, hh) / 2f - strokeWidth / 2f
 
         bgLine.mRadius = radius
-        lines.forEach { it.mRadius = radius }
+        donutSectionLines.forEach { it.mRadius = radius }
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -487,7 +490,7 @@ class DonutProgressView @JvmOverloads constructor(
         canvas.translate(centerX, centerY)
 
         bgLine.draw(canvas)
-        lines.forEach { it.draw(canvas) }
+        donutSectionLines.forEach { it.draw(canvas) }
     }
 
     private fun dpToPx(dp: Float) = TypedValue.applyDimension(

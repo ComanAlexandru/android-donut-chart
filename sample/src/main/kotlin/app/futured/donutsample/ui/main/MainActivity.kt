@@ -14,14 +14,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<View>(R.id.android_view_sample_button).setOnClickListener {
+//        findViewById<View>(R.id.android_view_sample_button).setOnClickListener {
             startActivity(Intent(this, PlaygroundActivity::class.java))
-        }
-
-        //Test
-
-        findViewById<View>(R.id.compose_sample_button).setOnClickListener {
-            startActivity(Intent(this, PlaygroundComposeActivity::class.java))
-        }
+//        }
+//
+//        findViewById<View>(R.id.compose_sample_button).setOnClickListener {
+//            startActivity(Intent(this, PlaygroundComposeActivity::class.java))
+//        }
     }
 }
