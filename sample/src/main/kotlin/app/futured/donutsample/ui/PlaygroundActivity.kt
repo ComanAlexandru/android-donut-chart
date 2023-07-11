@@ -34,20 +34,17 @@ class PlaygroundActivity : AppCompatActivity() {
         setContentView(R.layout.activity_playground)
 
         sections = listOf(
-//            DonutChartSection(
-//                "1",
-//                BlackCategory.name,
-//                getColorCompat(BlackCategory.colorRes),
-//                12f
-//            ),
             DonutChartSection(
-                "2",
+                BlackCategory.name,
+                getColorCompat(BlackCategory.colorRes),
+                12f
+            ),
+            DonutChartSection(
                 GreenCategory.name,
                 getColorCompat(GreenCategory.colorRes),
                 3f
             ),
             DonutChartSection(
-                "3",
                 OrangeCategory.name,
                 getColorCompat(OrangeCategory.colorRes),
                 1f

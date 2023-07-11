@@ -4,7 +4,6 @@ import android.animation.AnimatorSet
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import app.futured.donut.extensions.sumByFloat
@@ -16,10 +15,6 @@ class DonutChartView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private var circleRadius = 0f
-        private set(value) {
-            field = value
-//            chartSections.forEach { it.drawableArc.radius = field }
-        }
 
     private val chartSections = arrayListOf<DonutChartSection>()
 
@@ -55,6 +50,7 @@ class DonutChartView @JvmOverloads constructor(
             chartSections.add(section)
             val arcStartPercentage = getStartPercentage(section)
             section.drawableArc.setProps(
+                section.weight * 100f / totalWeight,
                 strokeWidthPx,
                 circleRadius,
                 arcStartPercentage,
@@ -71,12 +67,11 @@ class DonutChartView @JvmOverloads constructor(
             return 0f
         } else {
             return chartSections[sectionIndex - 1].drawableArc.endPercentage
-
         }
     }
 
     private fun getEndPercentage(weight: Float, startPercentage: Float, totalWeight: Float): Float {
-        return weight * 100f / totalWeight + startPercentage
+        return startPercentage + weight * 100f / totalWeight
     }
 
     private fun runAnimations() {
@@ -92,7 +87,4 @@ class DonutChartView @JvmOverloads constructor(
         animatorSet?.start()
     }
 
-    private fun log(label: String, value: String) {
-        Log.e("DonutProgressView", "$label: $value")
-    }
 }

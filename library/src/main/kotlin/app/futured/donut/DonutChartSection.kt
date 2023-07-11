@@ -9,13 +9,14 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathMeasure
 import android.util.Log
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import kotlin.math.ceil
 
 class DonutChartSection(
-    val id: String,
     val label: String,
     val color: Int,
     val weight: Float
@@ -25,34 +26,31 @@ class DonutChartSection(
 
     internal class SectionArc(lineColor: Int) {
 
+        private val SEGMENTS_GAP_PERCENTAGE = 3f
+
         private val arcDrawLinesCount = 64
         private val paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        private var animationInterpolator: Interpolator = DecelerateInterpolator(1.5f)
+        private var animationInterpolator: Interpolator = AccelerateDecelerateInterpolator()
         private var path: Path = Path()
 
         private var radius: Float = 0.0f
 
+        private var weightPercentage: Float = 0.0f
+
         var startPercentage = 0.0f
             private set(value) {
-                field = value
-                this.startAngleRadians = value.toRadians()
+                field = value + SEGMENTS_GAP_PERCENTAGE
+                this.startAngleRadians = (field - SEGMENTS_GAP_PERCENTAGE / 2).toRadiansFromPercentage()
             }
 
         var endPercentage = 0.0f
             private set(value) {
                 field = value
-                this.endAngleRadians = value.toRadians()
+                this.endAngleRadians = (field - SEGMENTS_GAP_PERCENTAGE / 2).toRadiansFromPercentage()
             }
 
         private var startAngleRadians: Double = 0.0
-            set(value) {
-                field = value + 270f.toRadians()
-            }
-
         private var endAngleRadians: Double = 0.0
-            set(value) {
-                field = value + 270f.toRadians()
-            }
 
         init {
             paint.style = Paint.Style.STROKE
@@ -60,56 +58,30 @@ class DonutChartSection(
             paint.color = lineColor
         }
 
-        fun setProps(strokeWidth: Float, radius: Float, startPercentage: Float, endPercentage: Float) {
-            Log.e("setProps", "Start[$startPercentage] End[$endPercentage]")
+        fun setProps(weightPercentage: Float, strokeWidth: Float, radius: Float, startPercentage: Float, endPercentage: Float) {
             paint.strokeWidth = strokeWidth
+            this.weightPercentage = weightPercentage
             this.startPercentage = startPercentage
             this.endPercentage = endPercentage
             this.radius = radius
-            computePath()
-            updatePathEffect()
         }
 
         fun getAnimation(animationProgress: (() -> Unit)? = null): ValueAnimator {
-            return ValueAnimator.ofFloat(startPercentage.toFloat(), endPercentage.toFloat()).apply {
-                duration = 1000
+            return ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = (500 * weightPercentage / 100 + 200).toLong()
                 interpolator = animationInterpolator
                 addUpdateListener { listener ->
                     (listener.animatedValue as? Float)?.let { animValue ->
                         updatePathEffect(animValue)
                     }
-//                    Log.e("animProgress", "Start[$startAngleRadians] Progress[${listener.animatedValue}] End[$endAngleRadians]")
                     animationProgress?.invoke()
                 }
 
-                doOnEnd {
-                    Log.e("animProgress", "END for $endAngleRadians")
+                doOnStart {
+                    computePath()
                 }
             }
         }
-
-//        fun getAnimationOld(
-//            to: Float,
-//            animationProgress: (() -> Unit)? = null,
-//            animationEnded: (() -> Unit)? = null
-//        ): ValueAnimator {
-//
-//            return ValueAnimator.ofFloat(mAngleAnimationProgress, to).apply {
-//                duration = 1000
-//                interpolator = animationInterpolator
-//                addUpdateListener {
-//                    (it.animatedValue as? Float)?.let { animValue ->
-//                        mAngleAnimationProgress = animValue
-//                    }
-//                    Log.e("getAnimationOld", "From $mAngleAnimationProgress to $to")
-//                    animationProgress?.invoke()
-//                }
-//
-//                doOnEnd {
-//                    animationEnded?.invoke()
-//                }
-//            }
-//        }
 
         fun draw(canvas: Canvas) {
             canvas.drawPath(path, paint)
@@ -118,8 +90,8 @@ class DonutChartSection(
         private fun computePath() {
             val newPath = Path()
 
-            val endAngle = Math.PI * 2.0
-            val angleStep = endAngle / arcDrawLinesCount
+            val angleRange = endAngleRadians - startAngleRadians
+            val angleStep = angleRange / arcDrawLinesCount
 
             newPath.moveTo(
                 radius * Math.cos(startAngleRadians).toFloat(),
@@ -127,16 +99,17 @@ class DonutChartSection(
             )
 
             for (i in 1 until arcDrawLinesCount + 1) {
+                val angle = startAngleRadians + i * angleStep
                 newPath.lineTo(
-                    radius * Math.cos(i * angleStep + startAngleRadians).toFloat(),
-                    radius * Math.sin(i * angleStep + startAngleRadians).toFloat()
+                    radius * Math.cos(angle).toFloat(),
+                    radius * Math.sin(angle).toFloat()
                 )
             }
 
             this.path = newPath
         }
 
-        private fun updatePathEffect(animationProgress: Float = endAngleRadians.toFloat()) {
+        private fun updatePathEffect(animationProgress: Float) {
             val pathLen = PathMeasure(path, false).length
             val drawnLength = ceil(pathLen * animationProgress)
 
@@ -146,7 +119,8 @@ class DonutChartSection(
             )
         }
 
-        private fun Float.toRadians() = Math.toRadians(this.toDouble())
+        private fun Float.toRadiansFromPercentage() = Math.toRadians(this.toDouble() * 360.0 / 100.0 - 90.0)
+
     }
 
 }
