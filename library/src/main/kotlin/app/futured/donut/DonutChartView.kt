@@ -1,16 +1,12 @@
 package app.futured.donut
 
 import android.animation.AnimatorSet
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.Interpolator
-import androidx.core.animation.doOnEnd
 import app.futured.donut.extensions.sumByFloat
 
 class DonutChartView @JvmOverloads constructor(
@@ -22,14 +18,12 @@ class DonutChartView @JvmOverloads constructor(
     private var circleRadius = 0f
         private set(value) {
             field = value
-            chartSections.forEach { it.drawableArc.radius = field }
+//            chartSections.forEach { it.drawableArc.radius = field }
         }
 
     private val chartSections = arrayListOf<DonutChartSection>()
-    private var totalWeight: Float = 0f
 
     private var strokeWidthPx: Float = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f, resources.displayMetrics)
-    private var animationInterpolator: Interpolator = DecelerateInterpolator(1.5f)
     private var animatorSet: AnimatorSet? = null
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -55,84 +49,47 @@ class DonutChartView @JvmOverloads constructor(
     fun submitData(sections: List<DonutChartSection>) {
         chartSections.clear()
 
-        this.chartSections.addAll(ArrayList(sections.filter { it.weight >= 0f }))
+        val totalWeight = sections.sumByFloat { it.weight }
 
-        this.totalWeight = this.chartSections.sumByFloat { it.weight }
-
-        this.chartSections.forEach { section ->
-            section.drawableArc = DonutChartSection.SectionArc(
-                circleRadius,
-                section.color,
+        sections.filter { it.weight >= 0f }.forEach { section ->
+            chartSections.add(section)
+            val arcStartPercentage = getStartPercentage(section)
+            section.drawableArc.setProps(
                 strokeWidthPx,
-                0f,
-                calculateStartAngle(section.weight, this.totalWeight),
-                calculateEndAngle(section.weight, this.totalWeight)
+                circleRadius,
+                arcStartPercentage,
+                getEndPercentage(section.weight, arcStartPercentage, totalWeight)
             )
         }
 
-        resolveState()
+        runAnimations()
     }
 
-    private fun calculateStartAngle(weight: Float, totalWeight: Float): Float {
-        return 270f
+    private fun getStartPercentage(section: DonutChartSection): Float {
+        val sectionIndex = chartSections.indexOf(section)
+        if (sectionIndex <= 0) {
+            return 0f
+        } else {
+            return chartSections[sectionIndex - 1].drawableArc.endPercentage
+
+        }
     }
 
-    private fun calculateEndAngle(weight: Float, totalWeight: Float): Float {
-        return 270f
+    private fun getEndPercentage(weight: Float, startPercentage: Float, totalWeight: Float): Float {
+        return weight * 100f / totalWeight + startPercentage
     }
 
-    private fun resolveState() {
+    private fun runAnimations() {
         animatorSet?.cancel()
         animatorSet = AnimatorSet()
 
-        val sectionWeights = chartSections.map { it.weight }
-
-        val drawPercentages = sectionWeights.mapIndexed { index, _ ->
-            getWeightOfTotalForLine(sectionWeights, index) / totalWeight
-        }
-
-        drawPercentages.forEachIndexed { index, newPercentage ->
-            val line = chartSections[index]
-            val animator = animateLine(line.drawableArc, newPercentage) {
-
+        animatorSet?.playSequentially(
+            chartSections.map { section ->
+                section.drawableArc.getAnimation(animationProgress = { invalidate() })
             }
-
-            animatorSet?.play(animator)
-        }
+        )
 
         animatorSet?.start()
-    }
-
-    private fun getWeightOfTotalForLine(amounts: List<Float>, index: Int): Float {
-        if (index >= amounts.size) {
-            return 0f
-        }
-
-        val thisLine = amounts[index]
-        val previousLine = getWeightOfTotalForLine(amounts, index + 1) // Length of line above this one
-
-        log("index", index.toString())
-        log("drawAmount", (thisLine + previousLine).toString())
-
-        return thisLine + previousLine
-    }
-
-    private fun animateLine(line: DonutChartSection.SectionArc, to: Float, animationEnded: (() -> Unit)? = null): ValueAnimator {
-        log("animateTo", to.toString())
-        return ValueAnimator.ofFloat(line.mLength, to).apply {
-            duration = 1000
-            interpolator = animationInterpolator
-            addUpdateListener {
-                (it.animatedValue as? Float)?.let { animValue ->
-                    line.mLength = animValue
-                }
-                invalidate()
-            }
-
-            doOnEnd {
-                animationEnded?.invoke()
-            }
-        }
     }
 
     private fun log(label: String, value: String) {
